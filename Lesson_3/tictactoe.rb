@@ -1,9 +1,17 @@
+require 'pry'
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]]
+
+def joinor(brd, com=", ", word='or')
+  empty_squares = empty_squares(brd)
+  last_square = empty_squares.pop
+  return last_square if empty_squares.empty?
+  "#{empty_squares.join(com)} #{word} #{last_square}" 
+end
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -40,7 +48,7 @@ end
 def player_places_piece!(brd)
   square = ''
   loop do
-    prompt "Choose a square (#{empty_squares(brd).join(', ')}):"
+    prompt "Choose a square #{joinor(brd)}"
     square = gets.chomp.to_i
     break if empty_squares(brd).include?(square)
     prompt "Sorry, that's not a valid choice"
@@ -48,8 +56,24 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
+def at_risk(brd)
+  move = nil
+  WINNING_LINES.each do |line|
+    if brd.values_at(*line).count(PLAYER_MARKER) == 2 &&
+      brd.values_at(*line).count(COMPUTER_MARKER) == 0
+      moves = brd.select {|k,v| v == PLAYER_MARKER}.keys
+      move = line.reject {|num| moves.any?(num)}[0]
+    end
+  end
+  move
+end
+
 def computer_places_piece!(brd)
-  square = empty_squares(brd).sample
+  if at_risk(brd)
+    square = at_risk(brd)
+  else
+    square = empty_squares(brd).sample
+  end
   brd[square] = COMPUTER_MARKER
 end
 
