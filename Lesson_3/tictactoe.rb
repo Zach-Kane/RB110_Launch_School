@@ -1,4 +1,3 @@
-require 'pry'
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
@@ -10,7 +9,7 @@ def joinor(brd, com=", ", word='or')
   empty_squares = empty_squares(brd)
   last_square = empty_squares.pop
   return last_square if empty_squares.empty?
-  "#{empty_squares.join(com)} #{word} #{last_square}" 
+  "#{empty_squares.join(com)} #{word} #{last_square}"
 end
 
 def prompt(msg)
@@ -67,13 +66,13 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-def computer_offense_defense(brd, marker_1, marker_2)
+def computer_offense_defense(brd, marker1, marker2)
   move = nil
   WINNING_LINES.each do |line|
-    if brd.values_at(*line).count(marker_1) == 2 && 
-      brd.values_at(*line).count(marker_2) == 0
-        moves = brd.select {|k,v| v == marker_1}.keys
-        move = line.reject {|num| moves.any?(num)}[0]
+    if brd.values_at(*line).count(marker1) == 2 &&
+       brd.values_at(*line).count(marker2) == 0
+      moves = brd.select { |_, v| v == marker1 }.keys
+      move = line.reject { |num| moves.any?(num) }[0]
     end
   end
   move
@@ -85,25 +84,25 @@ def computer_places_piece!(brd)
   random = empty_squares(brd).sample
   return brd[offense] = COMPUTER_MARKER if offense
   return brd[defense] = COMPUTER_MARKER if defense
-  return brd[5] = COMPUTER_MARKER if brd[5] == INITIAL_MARKER  
+  return brd[5] = COMPUTER_MARKER if brd[5] == INITIAL_MARKER
   brd[random] = COMPUTER_MARKER
 end
 
 def place_piece!(board, current_player)
   case current_player
-  when 'player' 
+  when 'player'
     player_places_piece!(board)
-  when 'computer' 
+  when 'computer'
     computer_places_piece!(board)
-  end 
+  end
 end
 
 def alternate_player(current_player)
   case current_player
   when 'player'
-    current_player = 'computer'
+    'computer'
   else
-    current_player = 'player'
+    'player'
   end
 end
 
