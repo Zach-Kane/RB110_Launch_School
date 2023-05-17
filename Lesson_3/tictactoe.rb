@@ -45,6 +45,17 @@ def empty_squares(brd)
   brd.keys.select { |num| brd[num] == INITIAL_MARKER }
 end
 
+def who_first?
+  first = ''
+  loop do
+    puts "Who goes first, player or computer?"
+    first = gets.chomp
+    break if first == 'player' || first == 'computer'
+    puts "Not a valid choice"
+  end
+  first
+end
+
 def player_places_piece!(brd)
   square = ''
   loop do
@@ -56,25 +67,44 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-def at_risk(brd)
+def computer_offense_defense(brd, marker_1, marker_2)
   move = nil
   WINNING_LINES.each do |line|
-    if brd.values_at(*line).count(PLAYER_MARKER) == 2 &&
-      brd.values_at(*line).count(COMPUTER_MARKER) == 0
-      moves = brd.select {|k,v| v == PLAYER_MARKER}.keys
-      move = line.reject {|num| moves.any?(num)}[0]
+    if brd.values_at(*line).count(marker_1) == 2 && 
+      brd.values_at(*line).count(marker_2) == 0
+        moves = brd.select {|k,v| v == marker_1}.keys
+        move = line.reject {|num| moves.any?(num)}[0]
     end
   end
   move
 end
 
 def computer_places_piece!(brd)
-  if at_risk(brd)
-    square = at_risk(brd)
+  offense = computer_offense_defense(brd, COMPUTER_MARKER, PLAYER_MARKER)
+  defense = computer_offense_defense(brd, PLAYER_MARKER, COMPUTER_MARKER)
+  random = empty_squares(brd).sample
+  return brd[offense] = COMPUTER_MARKER if offense
+  return brd[defense] = COMPUTER_MARKER if defense
+  return brd[5] = COMPUTER_MARKER if brd[5] == INITIAL_MARKER  
+  brd[random] = COMPUTER_MARKER
+end
+
+def place_piece!(board, current_player)
+  case current_player
+  when 'player' 
+    player_places_piece!(board)
+  when 'computer' 
+    computer_places_piece!(board)
+  end 
+end
+
+def alternate_player(current_player)
+  case current_player
+  when 'player'
+    current_player = 'computer'
   else
-    square = empty_squares(brd).sample
+    current_player = 'player'
   end
-  brd[square] = COMPUTER_MARKER
 end
 
 def board_full?(brd)
@@ -87,18 +117,9 @@ end
 
 def detect_winner(brd)
   WINNING_LINES.each do |line|
-    # if brd[line[0]] == PLAYER_MARKER &&
-    #    brd[line[1]] == PLAYER_MARKER &&
-    #    brd[line[2]] == PLAYER_MARKER
-    #   return 'Player'
-    # elsif brd[line[0]] == COMPUTER_MARKER &&
-    #       brd[line[1]] == COMPUTER_MARKER &&
-    #       brd[line[2]] == COMPUTER_MARKER
-    #   return 'Computer'
-    # end
-    if brd.values_at(line[0], line[1], line[2]).count(PLAYER_MARKER) == 3 # refactor
+    if brd.values_at(*line).count(PLAYER_MARKER) == 3
       return 'Player'
-    elsif brd.values_at(*line).count(COMPUTER_MARKER) == 3 # more refactor
+    elsif brd.values_at(*line).count(COMPUTER_MARKER) == 3
       return 'Computer'
     end
   end
@@ -107,14 +128,12 @@ end
 
 loop do
   board = initalize_board
+  current_player = who_first?
 
   loop do
     display_board(board)
-
-    player_places_piece!(board)
-    break if someone_won?(board) || board_full?(board)
-
-    computer_places_piece!(board)
+    place_piece!(board, current_player)
+    current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
 
