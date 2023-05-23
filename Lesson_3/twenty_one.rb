@@ -188,7 +188,7 @@ loop do
       puts "First player to #{rounds} wins the game."
       show_score(score)
       converted_hand = convert_hand(human)
-      computer_hand(computer, converted_hand)
+      computer_hand(computer)
       human_total = hand_total(converted_hand)
       print_cards(human, 'Your', human_total)
       if bust?(human)
