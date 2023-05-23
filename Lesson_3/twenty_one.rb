@@ -31,6 +31,13 @@ def card_convert(player)
   end
 end
 
+def convert_hand(player)
+  converted_hand = card_convert(player)
+  before_aces = hand_total(converted_hand)
+  calculate_aces(player, before_aces, converted_hand)
+  converted_hand
+end
+
 def hand_total(converted_hand)
   hand_total = 0
   converted_hand.each do |hand|
@@ -48,13 +55,6 @@ def calculate_aces(player, before_aces, converted_hand)
     before_aces = hand_total(converted_hand)
     index += 1
   end
-end
-
-def convert_hand(player)
-  converted_hand = card_convert(player)
-  before_aces = hand_total(converted_hand)
-  calculate_aces(player, before_aces, converted_hand)
-  converted_hand
 end
 
 def computer_hand(computer)
@@ -81,7 +81,7 @@ def bust?(player)
   end
 end
 
-def print_cards(player, name='default')
+def print_cards(player, name='Player', default_total='')
   line1 = ''
   line2 = ''
   line3 = ''
@@ -89,6 +89,7 @@ def print_cards(player, name='default')
   line5 = ''
   line6 = ''
   line7 = ''
+
   player.each do |card|
     space = ' '
     space = '' if card[1] == 10
@@ -101,6 +102,7 @@ def print_cards(player, name='default')
     line6 << "|   #{card[1]}#{space}| "
     line7 << "------- "
   end
+
   puts line1
   puts line2
   puts line3
@@ -108,20 +110,19 @@ def print_cards(player, name='default')
   puts line5
   puts line6
   puts line7
-  puts "#{name} hand"
+  puts "#{name} hand: #{default_total}"
 end
 
-def print_all(human, computer, human_hand, computer_hand)
-  print_cards(computer, 'Dealer')
-  puts "Total: #{computer_hand}"
-  print_cards(human, 'Your')
-  puts "Total: #{human_hand}"
+def print_all(human, computer, human_total, computer_total)
+  print_cards(computer, 'Dealer', computer_total)
+  print_cards(human, 'Your', human_total)
 end
 
-def end_game(human, computer)
+def end_game(human, computer, score)
   computer_hand = hand_total(convert_hand(computer))
   human_hand = hand_total(convert_hand(human))
   system 'clear'
+  show_score(score)
   if bust?(human)
     puts "You Bust, Dealer Wins!!!!"
   elsif bust?(computer)
@@ -137,41 +138,93 @@ def end_game(human, computer)
   print_all(human, computer, human_hand, computer_hand)
 end
 
+def score(human, computer, score)
+  computer_hand = hand_total(convert_hand(computer))
+  human_hand = hand_total(convert_hand(human))
+  if bust?(human)
+    score[:computer] += 1
+  elsif bust?(computer)
+    score[:player] += 1
+  elsif computer_hand > human_hand
+    score[:computer] += 1
+  elsif human_hand > computer_hand
+    score[:player] += 1
+  end
+end
+
+def show_score(score)
+  puts "Your Score: #{score[:player]}, Dealer Score: #{score[:computer]}"
+end
+
 loop do
-  deck = []
-  human = []
-  computer = []
+  system 'clear'
+  puts "Welcome to Lets Play 21!"
+  sleep(1)
+  puts "The player to get closest to 21 without going over wins"
+  sleep(1)
+  puts "How many rounds should we play? Enter any number"
+  rounds = gets.chomp.to_i
 
-  deck = initialize_deck(deck)
-
-  deal_card(deck, human, 2)
-  deal_card(deck, computer, 2)
+  score = { computer: 0, player: 0 }
 
   loop do
+    deck = []
+    human = []
+    computer = []
+    converted_hand = nil
+    deck = initialize_deck(deck)
+
+    deal_card(deck, human, 2)
+    deal_card(deck, computer, 2)
+
     system 'clear'
-    converted_hand = convert_hand(human)
-    computer_hand(computer)
-    print_cards(human, 'Your')
-    p hand_total(converted_hand)
-    if bust?(human)
-      break
+    puts 'Dealing cards.'
+    sleep(0.5)
+    system 'clear'
+    puts 'Dealing cards..'
+    sleep(0.5)
+    loop do
+      system 'clear'
+      puts "First player to #{rounds} wins the game."
+      show_score(score)
+      converted_hand = convert_hand(human)
+      computer_hand(computer, converted_hand)
+      human_total = hand_total(converted_hand)
+      print_cards(human, 'Your', human_total)
+      if bust?(human)
+        break
+      end
+      puts "Would you like to 1) Hit, 2) Stay"
+      answer = gets.chomp.to_i
+      if answer == 1
+        deal_card(deck, human, 1)
+        next
+      elsif answer == 2
+        break
+      else
+        puts "Not a valid choice"
+        sleep(1)
+        next
+      end
     end
-    puts "Would you like to 1) hit 2) stay"
-    answer = gets.chomp.downcase
-    if answer.start_with?('1')
-      deal_card(deck, human, 1)
-      next
-    end
-    break
+
+    hit_computer(deck, computer) if !bust?(human)
+
+    score(human, computer, score)
+
+    end_game(human, computer, score)
+
+    puts "Hit any button to continue"
+    gets.chomp
+
+    break if score[:player] == rounds || score[:computer] == rounds
   end
-
-  if hand_total(convert_hand(human)) <= 21
-    hit_computer(deck, computer)
+  if score[:player] == rounds
+    puts "You win the game!!"
+  else
+    puts "Dealer won this game!!"
   end
-
-  end_game(human, computer)
-
-  puts "Would you like you play again? yes/no"
-  answer = gets.chomp.downcase
-  break unless answer.start_with?('y')
+  puts "Would you like you play again? 1) Yes, 2) No"
+  answer = gets.chomp.to_i
+  break unless answer == 1
 end
