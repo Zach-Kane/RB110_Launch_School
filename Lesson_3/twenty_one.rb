@@ -57,7 +57,7 @@ def calculate_aces(player, before_aces, converted_hand)
   end
 end
 
-def computer_hand(computer)
+def show_computer_hand(computer)
   computer_hand = []
   computer_hand << computer[0]
   computer_hand << ['?', '?']
@@ -66,17 +66,18 @@ end
 
 def hit_computer(deck, computer)
   loop do
-    if hand_total(convert_hand(computer)) < 17
+    computer_total = hand_total(convert_hand(computer))
+    if computer_total < 17
       deal_card(deck, computer, 1)
     else
       break
     end
-    break if bust?(computer)
+    break if bust?(computer_total)
   end
 end
 
-def bust?(player)
-  if hand_total(convert_hand(player)) > 21
+def bust?(hand_total)
+  if hand_total > 21
     true
   end
 end
@@ -118,36 +119,32 @@ def print_all(human, computer, human_total, computer_total)
   print_cards(human, 'Your', human_total)
 end
 
-def end_game(human, computer, score)
-  computer_hand = hand_total(convert_hand(computer))
-  human_hand = hand_total(convert_hand(human))
+def end_game(human, computer, human_total, computer_total, score)
   system 'clear'
   show_score(score)
-  if bust?(human)
+  if bust?(human_total)
     puts "You Bust, Dealer Wins!!!!"
-  elsif bust?(computer)
+  elsif bust?(computer_total)
     puts "Dealer busts, You win!!!!"
-  elsif computer_hand > human_hand
+  elsif computer_total > human_total
     puts "Dealer Wins!!"
-  elsif human_hand > computer_hand
+  elsif human_total > computer_total
     puts "You Win!!!"
   else
     puts "It's a draw!!"
   end
 
-  print_all(human, computer, human_hand, computer_hand)
+  print_all(human, computer, human_total, computer_total)
 end
 
-def score(human, computer, score)
-  computer_hand = hand_total(convert_hand(computer))
-  human_hand = hand_total(convert_hand(human))
-  if bust?(human)
+def score(human_total, computer_total, score)
+  if bust?(human_total)
     score[:computer] += 1
-  elsif bust?(computer)
+  elsif bust?(computer_total)
     score[:player] += 1
-  elsif computer_hand > human_hand
+  elsif computer_total > human_total
     score[:computer] += 1
-  elsif human_hand > computer_hand
+  elsif human_total > computer_total
     score[:player] += 1
   end
 end
@@ -172,6 +169,7 @@ loop do
     human = []
     computer = []
     converted_hand = nil
+    human_total = nil
     deck = initialize_deck(deck)
 
     deal_card(deck, human, 2)
@@ -188,10 +186,10 @@ loop do
       puts "First player to #{rounds} wins the game."
       show_score(score)
       converted_hand = convert_hand(human)
-      computer_hand(computer)
+      show_computer_hand(computer)
       human_total = hand_total(converted_hand)
       print_cards(human, 'Your', human_total)
-      if bust?(human)
+      if bust?(human_total)
         break
       end
       puts "Would you like to 1) Hit, 2) Stay"
@@ -208,11 +206,13 @@ loop do
       end
     end
 
-    hit_computer(deck, computer) if !bust?(human)
+    hit_computer(deck, computer) if !bust?(human_total)
 
-    score(human, computer, score)
+    computer_total = hand_total(convert_hand(computer))
 
-    end_game(human, computer, score)
+    score(human_total, computer_total, score)
+
+    end_game(human, computer, human_total, computer_total, score)
 
     puts "Hit any button to continue"
     gets.chomp
