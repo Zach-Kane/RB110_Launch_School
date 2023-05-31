@@ -1,6 +1,14 @@
+require 'yaml'
+
+MSG = YAML.load_file('twenty_one.yml')
+
 SUITS = ['♠', '♥', '♦', '♣']
 KEYS = { 'J' => 10, 'Q' => 10, 'K' => 10, 'A' => 11 }
 VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
+
+def prompt(message)
+  puts "=> #{MSG[message]}"
+end
 
 def initialize_deck(deck)
   SUITS.each do |suits|
@@ -82,7 +90,7 @@ def bust?(hand_total)
   end
 end
 
-def print_cards(player, name='Player', default_total='')
+def make_lines
   line1 = ''
   line2 = ''
   line3 = ''
@@ -90,27 +98,26 @@ def print_cards(player, name='Player', default_total='')
   line5 = ''
   line6 = ''
   line7 = ''
+  [line1, line2, line3, line4, line5, line6, line7]
+end
+
+def print_cards(player, name='Player', default_total='')
+  lines = make_lines
 
   player.each do |card|
     space = ' '
     space = '' if card[1] == 10
 
-    line1 << "_______ "
-    line2 << "|#{card[1]}#{space}   | "
-    line3 << "|     | "
-    line4 << "|  #{card[0]}  | "
-    line5 << "|     | "
-    line6 << "|   #{card[1]}#{space}| "
-    line7 << "------- "
+    lines[0] << "_______ "
+    lines[1] << "|#{card[1]}#{space}   | "
+    lines[2] << "|     | "
+    lines[3] << "|  #{card[0]}  | "
+    lines[4] << "|     | "
+    lines[5] << "|   #{card[1]}#{space}| "
+    lines[6] << "------- "
   end
 
-  puts line1
-  puts line2
-  puts line3
-  puts line4
-  puts line5
-  puts line6
-  puts line7
+  lines.each { |line| puts line }
   puts "#{name} hand: #{default_total}"
 end
 
@@ -119,19 +126,19 @@ def print_all(human, computer, human_total, computer_total)
   print_cards(human, 'Your', human_total)
 end
 
-def end_game(human, computer, human_total, computer_total, score)
+def end_round(human, computer, human_total, computer_total, score)
   system 'clear'
   show_score(score)
   if bust?(human_total)
-    puts "You Bust, Dealer Wins!!!!"
+    prompt('you bust')
   elsif bust?(computer_total)
-    puts "Dealer busts, You win!!!!"
+    prompt('dealer bust')
   elsif computer_total > human_total
-    puts "Dealer Wins!!"
+    prompt('dealer win')
   elsif human_total > computer_total
-    puts "You Win!!!"
+    prompt('you win')
   else
-    puts "It's a draw!!"
+    prompt('draw')
   end
 
   print_all(human, computer, human_total, computer_total)
@@ -150,19 +157,25 @@ def score(human_total, computer_total, score)
 end
 
 def show_score(score)
-  puts "Your Score: #{score[:player]}, Dealer Score: #{score[:computer]}"
+  puts "=> Your Score: #{score[:player]}, Dealer Score: #{score[:computer]}"
 end
 
 loop do
-  system 'clear'
-  puts "Welcome to Lets Play 21!"
-  sleep(1)
-  puts "The player to get closest to 21 without going over wins"
-  sleep(1)
-  puts "How many rounds should we play? Enter any number"
-  rounds = gets.chomp.to_i
-
+  rounds = ""
+  loop do
+    system 'clear'
+    prompt('welcome')
+    sleep(1)
+    prompt('rules')
+    sleep(1)
+    prompt('rounds')
+    rounds = gets.chomp
+    break if rounds.to_i.to_s == rounds && rounds.to_i > 0
+    prompt('not valid')
+    sleep(1.5)
+  end
   score = { computer: 0, player: 0 }
+  rounds = rounds.to_i
 
   loop do
     deck = []
@@ -176,14 +189,14 @@ loop do
     deal_card(deck, computer, 2)
 
     system 'clear'
-    puts 'Dealing cards.'
+    prompt('deal1')
     sleep(0.5)
     system 'clear'
-    puts 'Dealing cards..'
+    prompt('deal2')
     sleep(0.5)
     loop do
       system 'clear'
-      puts "First player to #{rounds} wins the game."
+      puts "=> First player to win #{rounds} rounds wins the game."
       show_score(score)
       converted_hand = convert_hand(human)
       show_computer_hand(computer)
@@ -192,7 +205,7 @@ loop do
       if bust?(human_total)
         break
       end
-      puts "Would you like to 1) Hit, 2) Stay"
+      prompt('hit/stay')
       answer = gets.chomp.to_i
       if answer == 1
         deal_card(deck, human, 1)
@@ -200,7 +213,7 @@ loop do
       elsif answer == 2
         break
       else
-        puts "Not a valid choice"
+        prompt('not valid')
         sleep(1)
         next
       end
@@ -212,19 +225,19 @@ loop do
 
     score(human_total, computer_total, score)
 
-    end_game(human, computer, human_total, computer_total, score)
+    end_round(human, computer, human_total, computer_total, score)
 
-    puts "Hit any button to continue"
+    prompt('continue')
     gets.chomp
 
     break if score[:player] == rounds || score[:computer] == rounds
   end
   if score[:player] == rounds
-    puts "You win the game!!"
+    prompt('you win game')
   else
-    puts "Dealer won this game!!"
+    prompt('dealer win game')
   end
-  puts "Would you like you play again? 1) Yes, 2) No"
+  prompt('play again?')
   answer = gets.chomp.to_i
   break unless answer == 1
 end

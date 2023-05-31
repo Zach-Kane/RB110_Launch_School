@@ -1,0 +1,31 @@
+welcome: "Welcome to Lets Play 21!"
+
+rules: "The player to get closest to 21 without going over wins."
+
+rounds: "How many rounds should we play? Enter any number that is not 0."
+
+deal1: 'Dealing cards.'
+
+deal2: 'Dealing cards..'
+
+hit/stay: "Would you like to 1) Hit, 2) Stay"
+
+not valid: "Not a valid choice"
+
+you bust: "You Bust, Dealer wins the round!"
+
+dealer bust: "Dealer busts, You win this round!"
+
+dealer win: "Dealer wins the round!"
+
+you win: "You Win the round!"
+
+draw: "It's a draw!!"
+
+continue: "Hit any button to continue"
+
+you win game: "You win the game, congratulations!!!"
+
+dealer win game: "Dealer wins the game, better luck next time!!!"
+
+play again?: "Would you like you play again? 1) Yes, 2) No"
