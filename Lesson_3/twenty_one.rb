@@ -189,6 +189,17 @@ def deal_initial_cards(deck, human, computer)
   sleep(0.5)
 end
 
+def main_game_display(human, computer, human_total, score, rounds)
+  system 'clear'
+  puts "=> First player to win #{rounds} rounds wins the game."
+
+  show_score(score)
+
+  show_computer_hand(computer)
+
+  print_cards(human, 'Your', human_total)
+end
+
 loop do
   display_rules
   rounds = prompt_get_rounds
@@ -207,16 +218,10 @@ loop do
     deal_initial_cards(deck, human, computer)
 
     loop do
-      system 'clear'
-      puts "=> First player to win #{rounds} rounds wins the game."
-      show_score(score)
-
-      show_computer_hand(computer)
-
       converted_hand = convert_hand(human)
       human_total = hand_total(converted_hand)
 
-      print_cards(human, 'Your', human_total)
+      main_game_display(human, computer, human_total, score, rounds)
 
       if bust?(human_total)
         break
