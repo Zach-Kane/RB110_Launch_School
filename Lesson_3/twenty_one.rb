@@ -159,7 +159,7 @@ def show_score(score)
   puts "=> Your Score: #{score[:player]}, Dealer Score: #{score[:computer]}"
 end
 
-def prompt_number_of_rounds
+def welcome_get_rounds
   loop do
     system 'clear'
     prompt('welcome')
@@ -174,8 +174,20 @@ def prompt_number_of_rounds
   end
 end
 
+def deal_initial_cards(deck, human, computer)
+  deal_card(deck, human, 2)
+  deal_card(deck, computer, 2)
+
+  system 'clear'
+  prompt('deal1')
+  sleep(0.5)
+  system 'clear'
+  prompt('deal2')
+  sleep(0.5)
+end
+
 loop do
-  rounds = prompt_number_of_rounds
+  rounds = welcome_get_rounds
   rounds = rounds.to_i
 
   score = { computer: 0, player: 0 }
@@ -188,15 +200,7 @@ loop do
     human_total = nil
     deck = initialize_deck(deck)
 
-    deal_card(deck, human, 2)
-    deal_card(deck, computer, 2)
-
-    system 'clear'
-    prompt('deal1')
-    sleep(0.5)
-    system 'clear'
-    prompt('deal2')
-    sleep(0.5)
+    deal_initial_cards(deck, human, computer)
 
     loop do
       system 'clear'
