@@ -69,8 +69,7 @@ def show_computer_hand(computer)
   computer_hand = []
   computer_hand << computer[0]
   computer_hand << ['?', '?']
-  computer_cards = make_cards(computer_hand)
-  print_cards(computer_cards, 'Dealers')
+  print_cards(computer_hand, 'Dealers')
 end
 
 def hit_computer(deck, computer)
@@ -91,46 +90,39 @@ def bust?(hand_total)
   end
 end
 
-def make_lines
-  line1 = ''
-  line2 = ''
-  line3 = ''
-  line4 = ''
-  line5 = ''
-  line6 = ''
-  line7 = ''
-  [line1, line2, line3, line4, line5, line6, line7]
+def make_a_card(card)
+  space = ' '
+  space = '' if card[1] == 10
+  ["_______ ",
+   "|#{card[1]}#{space}   | ",
+   "|     | ",
+   "|  #{card[0]}  | ",
+   "|     | ",
+   "|   #{card[1]}#{space}| ",
+   "------- "]
 end
 
-def make_cards(player)
-  cards = make_lines
+def make_all_cards(player)
+  cards = ['', '', '', '', '', '', '']
 
   player.each do |card|
-    space = ' '
-    space = '' if card[1] == 10
-
-    cards[0] << "_______ "
-    cards[1] << "|#{card[1]}#{space}   | "
-    cards[2] << "|     | "
-    cards[3] << "|  #{card[0]}  | "
-    cards[4] << "|     | "
-    cards[5] << "|   #{card[1]}#{space}| "
-    cards[6] << "------- "
+    index = 0
+    make_a_card(card).each do |line|
+      cards[index] << line
+      index += 1
+    end
   end
-
   cards
 end
 
 def print_cards(player_cards, name, default_total='')
-  player_cards.each { |line| puts line }
+  puts make_all_cards(player_cards)
   puts "#{name} hand: #{default_total}"
 end
 
 def print_all(human, computer, human_total, computer_total)
-  computer_cards = make_cards(computer)
-  human_cards = make_cards(human)
-  print_cards(computer_cards, 'Dealer', computer_total)
-  print_cards(human_cards, 'Your', human_total)
+  print_cards(computer, 'Dealer', computer_total)
+  print_cards(human, 'Your', human_total)
 end
 
 def end_round(human, computer, human_total, computer_total, score)
@@ -167,9 +159,7 @@ def show_score(score)
   puts "=> Your Score: #{score[:player]}, Dealer Score: #{score[:computer]}"
 end
 
-loop do
-  rounds = ""
-
+def prompt_number_of_rounds
   loop do
     system 'clear'
     prompt('welcome')
@@ -178,13 +168,17 @@ loop do
     sleep(1)
     prompt('rounds')
     rounds = gets.chomp
-    break if rounds.to_i.to_s == rounds && rounds.to_i > 0
+    return rounds if rounds.to_i.to_s == rounds && rounds.to_i > 0
     prompt('not valid')
     sleep(1.5)
   end
+end
+
+loop do
+  rounds = prompt_number_of_rounds
+  rounds = rounds.to_i
 
   score = { computer: 0, player: 0 }
-  rounds = rounds.to_i
 
   loop do
     deck = []
@@ -213,9 +207,8 @@ loop do
 
       converted_hand = convert_hand(human)
       human_total = hand_total(converted_hand)
-      human_cards = make_cards(human)
 
-      print_cards(human_cards, 'Your', human_total)
+      print_cards(human, 'Your', human_total)
 
       if bust?(human_total)
         break
@@ -257,5 +250,8 @@ loop do
 
   prompt('play again?')
   answer = gets.chomp.to_i
-  break unless answer == 1
+  unless answer == 1
+    prompt('thanks for playing')
+    break
+  end
 end
