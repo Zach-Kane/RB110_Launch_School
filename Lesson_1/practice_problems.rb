@@ -1,22 +1,35 @@
-# flintstones = ["Fred", "Barney", "Wilma", "Betty", "Pebbles", "BamBam"]
+flintstones = ["Fred", "Barney", "Wilma", "Betty", "Pebbles", "BamBam"]
 
-# hash = flintstones.to_h { |element| [element, flintstones.index(element)] }
+hash = flintstones.to_h { |element| [element, flintstones.index(element)] }
 
-# p hash
+p hash
+
+flintstones = ["Fred", "Barney", "Wilma", "Betty", "Pebbles", "BamBam"]
+
+hsh = flintstones.each_with_object({}) do |e, o|
+  o[e] = flintstones.find_index(e)
+end
+
+p hsh
 
 ####
 
-# ages = { "Herman" => 32, "Lily" => 30, "Grandpa" => 5843, "Eddie" => 10, "Marilyn" => 22, "Spot" => 237 }
+ages = { "Herman" => 32, "Lily" => 30, "Grandpa" => 5843, "Eddie" => 10, "Marilyn" => 22, "Spot" => 237 }
 
-# puts ages.values.sum
+puts ages.values.sum
 
 ####
 
-# ages = { "Herman" => 32, "Lily" => 30, "Grandpa" => 402, "Eddie" => 10 }
+ages = { "Herman" => 32, "Lily" => 30, "Grandpa" => 402, "Eddie" => 10 }
 
 # ages.delete_if { |_, v| v > 100 }
 
 # puts ages
+
+ages.reject! {|_,v| v > 100}
+
+puts ages
+
 
 ####
 
@@ -26,23 +39,29 @@
 
 ####
 
-# flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
+flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
 
 # index = flintstones.index { |element| element[0, 2] == 'Be' }
 
 # puts index
+index = flintstones.index {|word| word.start_with?('Be')}
+p index
+
 
 ####
 
-# flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
+flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
 
 # flintstones.each {|name| name.slice!(3..-1)}
 
 # p flintstones
 
+flintstones.map! {|name| name[0, 3]}
+p flintstones
+
 ####
 
-# statement = "The Flintstones Rock"
+statement = "The Flintstones Rock"
 
 # hash = Hash.new(0)
 
@@ -50,6 +69,10 @@
 
 # puts hash
 
+hash = Hash.new(0)
+
+statement.chars.each { |letter| hash[letter] += 1 }
+puts hash
 ####
 
 # numbers = [1, 2, 3, 4]
@@ -80,16 +103,16 @@
 
 ####
 
-munsters = {
-  "Herman" => { "age" => 32, "gender" => "male" },
-  "Lily" => { "age" => 30, "gender" => "female" },
-  "Grandpa" => { "age" => 402, "gender" => "male" },
-  "Eddie" => { "age" => 10, "gender" => "male" },
-  "Marilyn" => { "age" => 23, "gender" => "female"}
-}
+# munsters = {
+#   "Herman" => { "age" => 32, "gender" => "male" },
+#   "Lily" => { "age" => 30, "gender" => "female" },
+#   "Grandpa" => { "age" => 402, "gender" => "male" },
+#   "Eddie" => { "age" => 10, "gender" => "male" },
+#   "Marilyn" => { "age" => 23, "gender" => "female"}
+# }
 
-munsters.each do |key, values|
-puts 'yes' if 1 + 2
-end
+# munsters.each do |key, values|
+# puts 'yes' if 1 + 2
+# end
 
 #p x
