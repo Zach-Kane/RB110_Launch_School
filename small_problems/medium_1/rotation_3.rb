@@ -1,9 +1,17 @@
+# def max_rotation(num)
+#   numbers = num.dup.to_s.chars
+#   numbers.size.times do |i|
+#     numbers << numbers.slice!(i)
+#   end
+#   numbers.join.to_i
+# end
+
 def max_rotation(num)
-  numbers = num.dup.to_s.chars
-  numbers.size.times do |i|
-    numbers << numbers.slice!(i)
+  num = num.to_s
+  num.size.times do |i|
+    num << num.slice!(i)
   end
-  numbers.join.to_i
+  num.to_i
 end
 
 p max_rotation(735291)# == 321579

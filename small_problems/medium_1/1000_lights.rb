@@ -1,29 +1,55 @@
-def lights_on_off(lights)
-  1.upto(lights.size) do |i|
-    index = 0
-    lights.map! do |light|
-      index += 1
-      if index % i == 0 && index >= i
-        !light
-      else
-        light
-      end
-    end
-  end
+# def lights_on_off(lights)
+#   1.upto(lights.size) do |i|
+#     index = 0
+#     lights.map! do |light|
+#       index += 1
+#       if index % i == 0 && index >= i
+#         !light
+#       else
+#         light
+#       end
+#     end
+#   end
+# end
+
+# def find_lights(number)
+#   lights = Array.new(number, false)
+#   lights_on_off(lights)
+#   lights_on = []
+#   lights.each_with_index do |light, indexes|
+#     lights_on << indexes + 1 if light == true
+#   end
+#   lights_on
+# end
+
+require 'pry'
+require 'pry-byebug'
+
+def initialize_lights1(num)
+  lights = []
+  1.upto(num) { lights << true }
+  lights
 end
 
 def find_lights(number)
-  lights = Array.new(number, false)
-  lights_on_off(lights)
+  lights = initialize_lights1(number)
+  indexes = 1
+  binding.pry
+
+  while lights.size > indexes
+    lights.each_with_index do |_, index1|
+      if (index1 +1)  > indexes && (index1 +1) % indexes == 0
+        lights[index1] = !lights[index1]
+      end
+    end
+    indexes += 1
+  end
   lights_on = []
-  lights.each_with_index do |light, indexes|
-    lights_on << indexes + 1 if light == true
+  lights.each_with_index do |ea, i|
+    lights_on << (i + 1) if ea == true
   end
   lights_on
 end
-
-
-p find_lights(1000)
 
 ### LS Version ##
 
@@ -56,5 +82,6 @@ def toggle_lights(number_of_lights)
 
   on_lights(lights)
 end
+
 
 p toggle_lights(1000) == find_lights(1000)

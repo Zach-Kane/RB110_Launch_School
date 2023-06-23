@@ -1,4 +1,9 @@
+require 'pry'
+
+require 'pry-byebug'
+
 def word_to_digit(words)
+  binding.pry
   words.gsub!('one', '1')
   words.gsub!('two', '2')
   words.gsub!('three', '3')
