@@ -8,6 +8,8 @@
 #   array
 # end
 
+# Solved! 
+
 def bubble_sort!(array)
   loop do
     compare = array.dup
